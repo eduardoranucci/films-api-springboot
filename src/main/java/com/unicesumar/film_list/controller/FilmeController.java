@@ -66,8 +66,10 @@ public class FilmeController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Filme criado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-        @ApiResponse(responseCode = "409", description = "Filme já cadastrado")
+        @ApiResponse(responseCode = "400", description = "Dados inválidos", 
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
+        @ApiResponse(responseCode = "409", description = "Filme já cadastrado",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain"))
     })
     @PostMapping
     public ResponseEntity<?> adicionarFilme(@Parameter(hidden = true) Principal principal, @RequestBody FilmeNaoAssistido filme) {
@@ -90,10 +92,14 @@ public class FilmeController {
 
     @Operation(summary = "Marcar filme como assistido", description = "Marca um filme não assistido como assistido, informando a data.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Filme marcado como assistido"),
-        @ApiResponse(responseCode = "400", description = "Data não informada"),
-        @ApiResponse(responseCode = "403", description = "Sem permissão"),
-        @ApiResponse(responseCode = "404", description = "Filme não encontrado")
+        @ApiResponse(responseCode = "200", description = "Filme marcado como assistido",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
+        @ApiResponse(responseCode = "400", description = "Data não informada",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
+        @ApiResponse(responseCode = "403", description = "Sem permissão",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
+        @ApiResponse(responseCode = "404", description = "Filme não encontrado",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain"))
     })
     @PutMapping("/{id}/assistir")
     public ResponseEntity<?> assistirFilme(
@@ -119,9 +125,12 @@ public class FilmeController {
 
     @Operation(summary = "Deletar filme não assistido", description = "Remove um filme não assistido do usuário autenticado.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Filme deletado com sucesso"),
-        @ApiResponse(responseCode = "403", description = "Sem permissão"),
-        @ApiResponse(responseCode = "404", description = "Filme não encontrado")
+        @ApiResponse(responseCode = "200", description = "Filme deletado com sucesso",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
+        @ApiResponse(responseCode = "403", description = "Sem permissão", 
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
+        @ApiResponse(responseCode = "404", description = "Filme não encontrado", 
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain"))
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarFilme(

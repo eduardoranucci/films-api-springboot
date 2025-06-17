@@ -36,9 +36,12 @@ public class AuthController {
         )
     )
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Usuário cadastrado com sucesso!"),
-        @ApiResponse(responseCode = "400", description = "Preencha todos os campos!"),
-        @ApiResponse(responseCode = "409", description = "Já existe um usuário com esse e-mail!")
+        @ApiResponse(responseCode = "201", description = "Usuário cadastrado com sucesso!",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
+        @ApiResponse(responseCode = "400", description = "Preencha todos os campos!",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
+        @ApiResponse(responseCode = "409", description = "Já existe um usuário com esse e-mail!",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain"))
     })
     @PostMapping("/registro")
     public ResponseEntity<?> registrarUsuario(@RequestBody Usuario user) {
