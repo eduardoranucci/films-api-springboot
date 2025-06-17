@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import com.unicesumar.film_list.model.Usuario;
 import com.unicesumar.film_list.service.AuthService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+@Tag(name = "Auth", description = "Endpoints relacionadas a autenticação")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -15,8 +21,31 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @Operation(
+        summary = "Registrar novo usuário",
+        description = "Cria um novo usuário na aplicação."
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        description = "Dados do usuário para cadastro",
+        required = true,
+        content = @io.swagger.v3.oas.annotations.media.Content(
+            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = Usuario.class),
+            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                value = "{ \"nome\": \"Lukar\", \"email\": \"lukar@email.com\", \"senha\": \"123456\" }"
+            )
+        )
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Usuário cadastrado com sucesso!"),
+        @ApiResponse(responseCode = "400", description = "Preencha todos os campos!"),
+        @ApiResponse(responseCode = "409", description = "Já existe um usuário com esse e-mail!")
+    })
     @PostMapping("/registro")
     public ResponseEntity<?> registrarUsuario(@RequestBody Usuario user) {
+        System.out.println("Dados recebidos para registro:");
+        System.out.println(user.getEmail());
+        System.out.println(user.getNome());
+        System.out.println(user.getSenha());
         user.setEmail(user.getEmail() != null ? user.getEmail().trim() : null);
         user.setNome(user.getNome() != null ? user.getNome().trim() : null);
         user.setSenha(user.getSenha() != null ? user.getSenha().trim() : null);
