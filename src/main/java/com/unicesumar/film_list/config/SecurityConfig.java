@@ -20,25 +20,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/registro", "/validarRegistro", "/", "/validarLogin", "/css/**", "/js/**", "/h2-console/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/")
-                .loginProcessingUrl("/validarLogin")
-                .defaultSuccessUrl("/home", true)
-                .failureUrl("/?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/?logout=true")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            )
+                .requestMatchers("/h2-console/**", "/api/auth/registro").permitAll()
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().permitAll()
+            );
+
+        http
+            .httpBasic(basic -> {})
+            .csrf(csrf -> csrf.disable())
             .headers(headers -> headers.frameOptions().disable())
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
             .userDetailsService(userDetailsService);
 
         return http.build();

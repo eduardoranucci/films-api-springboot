@@ -1,57 +1,37 @@
 package com.unicesumar.film_list.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.unicesumar.film_list.model.Usuario;
 import com.unicesumar.film_list.service.AuthService;
 
-import org.springframework.web.bind.annotation.PostMapping;
-
-@Controller
+@RestController
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
-    
-    @GetMapping("/registro")
-    public String registro(Model modelo) {
-        modelo.addAttribute("usuario", new Usuario());
-        return "registro";
-    }
-
-    @PostMapping("/validarRegistro")
-    public String validarRegistro(@ModelAttribute Usuario user, Model modelo) {
-        
-        user.setEmail(user.getEmail().trim());
-        user.setNome(user.getNome().trim());
-        user.setSenha(user.getSenha().trim());
+    @PostMapping("/registro")
+    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario user) {
+        user.setEmail(user.getEmail() != null ? user.getEmail().trim() : null);
+        user.setNome(user.getNome() != null ? user.getNome().trim() : null);
+        user.setSenha(user.getSenha() != null ? user.getSenha().trim() : null);
 
         if (user.getEmail() == null || user.getEmail().isEmpty() ||
             user.getNome() == null || user.getNome().isEmpty() ||
-            user.getSenha() == null || user.getSenha().isEmpty()) 
-        {
-            modelo.addAttribute("msg", "Preencha todos os campos!");
-            modelo.addAttribute("usuario", user);
-            return "registro";
+            user.getSenha() == null || user.getSenha().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Preencha todos os campos!");
         }
 
         if (authService.emailJaCadastrado(user.getEmail())) {
-            modelo.addAttribute("msg", "Já existe um usuário com esse e-mail!");
-            modelo.addAttribute("usuario", user);
-            return "registro";
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário com esse e-mail!");
         }
 
         authService.adicionarUsuario(user);
-        modelo.addAttribute("msgSuccess", "Usuário cadastrado com sucesso!");
-        return "index";
+        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário cadastrado com sucesso!");
     }
 }
