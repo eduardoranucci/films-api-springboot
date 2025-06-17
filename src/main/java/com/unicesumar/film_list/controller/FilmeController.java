@@ -2,6 +2,7 @@ package com.unicesumar.film_list.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import com.unicesumar.film_list.model.Usuario;
 import com.unicesumar.film_list.repository.UsuarioRepository;
 import com.unicesumar.film_list.service.FilmeService;
 import com.unicesumar.film_list.request.AssistirFilmeRequest;
+import com.unicesumar.film_list.response.FilmeResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,24 +37,30 @@ public class FilmeController {
     @Operation(summary = "Listar filmes não assistidos", description = "Retorna todos os filmes não assistidos do usuário autenticado.")
     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     @GetMapping("/nao-assistidos")
-    public List<FilmeNaoAssistido> listarFilmesNaoAssistidos(@Parameter(hidden = true) Principal principal) {
+    public List<FilmeResponse> listarFilmesNaoAssistidos(@Parameter(hidden = true) Principal principal) {
         String email = principal.getName();
         Usuario usuario = usuarioRepository.findByEmail(email);
-        return filmeService.listarFilmesNaoAssistidos(usuario.getId());
+        return filmeService.listarFilmesNaoAssistidos(usuario.getId())
+            .stream()
+            .map(f -> new FilmeResponse(f.getId(), f.getTitulo(), f.getGenero(), f.getAnoDeLancamento()))
+            .collect(Collectors.toList());
     }
 
     @Operation(summary = "Listar filmes assistidos", description = "Retorna todos os filmes assistidos do usuário autenticado.")
     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     @GetMapping("/assistidos")
-    public List<FilmeAssistido> listarFilmesAssistidos(@Parameter(hidden = true) Principal principal) {
+    public List<FilmeResponse> listarFilmesAssistidos(@Parameter(hidden = true) Principal principal) {
         String email = principal.getName();
         Usuario usuario = usuarioRepository.findByEmail(email);
-        return filmeService.listarFilmesAssistidos(usuario.getId());
+        return filmeService.listarFilmesAssistidos(usuario.getId())
+            .stream()
+            .map(f -> new FilmeResponse(f.getId(), f.getTitulo(), f.getGenero(), f.getAnoDeLancamento()))
+            .collect(Collectors.toList());
     }
 
     @Operation(
-        summary = "Adicionar filme não assistido",
-        description = "Adiciona um novo filme não assistido para o usuário autenticado.",
+        summary = "Adicionar filme",
+        description = "Adiciona um novo filme para o usuário autenticado.",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Dados do filme a ser adicionado",
             required = true,
@@ -65,8 +73,13 @@ public class FilmeController {
         )
     )
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Filme criado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Dados inválidos", 
+        @ApiResponse(responseCode = "201", description = "Filme criado com sucesso",
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                mediaType = "application/json",
+                schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = FilmeResponse.class)
+            )
+        ),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos",
             content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain")),
         @ApiResponse(responseCode = "409", description = "Filme já cadastrado",
             content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "text/plain"))
@@ -87,7 +100,13 @@ public class FilmeController {
         }
 
         filmeService.adicionarFilme(filme, usuario.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(filme);
+        FilmeResponse response = new FilmeResponse(
+            filme.getId(),
+            filme.getTitulo(),
+            filme.getGenero(),
+            filme.getAnoDeLancamento()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "Marcar filme como assistido", description = "Marca um filme não assistido como assistido, informando a data.")
