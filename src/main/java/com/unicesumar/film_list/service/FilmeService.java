@@ -35,13 +35,13 @@ public class FilmeService {
         return filmeAssistidoRepository.findByUsuarioId(usuarioId);
     }
 
-    public FilmeNaoAssistido buscarFilmeNaoAssistido(int id) {
-        FilmeNaoAssistido filme = filmeNaoAssistidoRepository.findById((long) id).orElse(null);
+    public FilmeNaoAssistido buscarFilmeNaoAssistido(Long id) {
+        FilmeNaoAssistido filme = filmeNaoAssistidoRepository.findById(id).orElse(null);
         return filme;
     }
 
-    public FilmeAssistido buscarFilmeAssistido(int id) {
-        FilmeAssistido filme = filmeAssistidoRepository.findById((long) id).orElse(null);
+    public FilmeAssistido buscarFilmeAssistido(Long id) {
+        FilmeAssistido filme = filmeAssistidoRepository.findById(id).orElse(null);
         return filme;
     }
 
