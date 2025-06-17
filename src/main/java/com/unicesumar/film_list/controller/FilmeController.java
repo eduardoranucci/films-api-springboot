@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.unicesumar.film_list.model.FilmeNaoAssistido;
-import com.unicesumar.film_list.model.FilmeAssistido;
 import com.unicesumar.film_list.model.Usuario;
 import com.unicesumar.film_list.repository.UsuarioRepository;
 import com.unicesumar.film_list.service.FilmeService;
